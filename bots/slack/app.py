@@ -1,3 +1,5 @@
+import sys
+sys.path.append("../../")
 import os
 import logging
 from flask import Flask
