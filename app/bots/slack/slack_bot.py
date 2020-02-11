@@ -8,16 +8,17 @@ from slackeventsapi import SlackEventAdapter
 import ssl as ssl_lib
 import certifi
 import requests
-from onboarding import Onboarding
-from vote_validated import ValidateVote
+
+from app.bots.slack.onboarding import Onboarding
+from app.bots.slack.vote_validated import ValidateVote
 
 from msg_handlers.message import Message
 from msg_handlers.messagefilter import MessageFilter
 from msg_handlers.chat_controller import ChatController
 from msg_handlers.keyboard_control import KeyboardController
 
-# Initialize a Flask app to host the events adapter
-app = Flask(__name__)
+from app import app
+
 slack_events_adapter = SlackEventAdapter(os.environ["SLACK_SIGNING_SECRET"], "/slack/events", app)
 
 # Initialize a Web API client
@@ -167,7 +168,7 @@ def message(payload):
     text = event.get("text")
 
     print(f"Received {text}")
-    
+
     if text and text.lower() == "start":
         return start_onboarding(user_id, channel_id)
     if text and text.lower() == "!clear":
@@ -186,7 +187,7 @@ def setup_controllers(user_id: str, channel: str, text: str):
     count = tokens[1].lower() == 'count'
     update_every = int(tokens[2]) if count else float(tokens[2])
     legal_moves = tokens[3:]
-    
+
     print(f"Setup by {user_id} on #{channel}:\n{count}\n{update_every}\n{legal_moves}")
 
     # Initialise the command parsers
